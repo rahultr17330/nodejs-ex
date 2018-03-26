@@ -102,11 +102,11 @@ app.use(function(err, req, res, next){
 initDb(function(err){
   console.log('Error connecting to Mongo. Message:\n'+err);
 });
+
+var server=app.listen(port, ip);
+console.log('Server running on http://%s:%s', ip, port);
 var io = socket(server);
 io.on('connection', function (socket) {
     console.log('made the socket', socket.id);
 });
-app.listen(port, ip);
-console.log('Server running on http://%s:%s', ip, port);
-
 module.exports = app ;
