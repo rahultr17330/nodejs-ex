@@ -1,5 +1,6 @@
 //  OpenShift sample Node application
 var express = require('express'),
+     socket = require('socket.io'),
     app     = express(),
     morgan  = require('morgan');
     
@@ -101,7 +102,10 @@ app.use(function(err, req, res, next){
 initDb(function(err){
   console.log('Error connecting to Mongo. Message:\n'+err);
 });
-
+var io = socket(server);
+io.on('connection', function (socket) {
+    console.log('made the socket', socket.id);
+});
 app.listen(port, ip);
 console.log('Server running on http://%s:%s', ip, port);
 
