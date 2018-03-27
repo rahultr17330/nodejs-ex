@@ -6,10 +6,10 @@ var express = require('express'),
     var verify = require('./verification');
 var admin_calls = require('./user_database');
 var cookieParser = require('cookie-parser');
-Object.assign=require('object-assign')
+Object.assign=require('object-assign');
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
-app.use(morgan('combined'))
+app.use(morgan('combined'));
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
@@ -58,21 +58,6 @@ var initDb = function(callback) {
     console.log('Connected to MongoDB at: %s', mongoURL);
   });
 };
-
-app.get('/', function (req, res) {
-  // try to initialize the db on every request if it's not already
-  // initialized.
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    var col = db.collection('counts');
-    // Create a document with request IP and current time of request
-    col.insert({ip: req.ip, date: Date.now()});
-    col.count(function(err, count){var countb = count;
-});
-}
-});
 
 initDb(function(err){
   console.log('Error connecting to Mongo. Message:\n'+err);
@@ -288,6 +273,6 @@ var event = 'chat'+data.handle;
       res.render('pages/error');
      
     });
-
+});
 
 module.exports = app ;
