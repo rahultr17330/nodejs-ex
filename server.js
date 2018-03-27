@@ -71,6 +71,8 @@ app.get('/', function (req, res) {
     col.insert({ip: req.ip, date: Date.now()});
     col.count(function(err, count){var countb = count;
 });
+}
+});
 
 initDb(function(err){
   console.log('Error connecting to Mongo. Message:\n'+err);
