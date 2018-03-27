@@ -7,6 +7,7 @@ var express = require('express'),
 var admin_calls = require('./user_database');
 var cookieParser = require('cookie-parser');
 Object.assign=require('object-assign');
+const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.use(morgan('combined'));
