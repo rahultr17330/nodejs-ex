@@ -287,5 +287,5 @@ var event = 'chat'+data.handle;
      
     });
 
-});
+
 module.exports = app ;
