@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+  <link rel="shortcut icon" type="imnage/jpg" href="/images/favicon.jpg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+  <!-- Compiled and minified JavaScript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+  <script src="/js/js.cookie.js"></script>
+  <script src="/js/circle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+  <script type="text/javascript">
+    var socket = io();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="black" />
+  <title>GT || Repository </title>
+  <style>
+  #watermark{
+    background:url("/images/logo_normal.svg") center center no-repeat;opacity:0.6;
+  opacity: 0.6;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}</style>
+</head>
+
+<body>
+  <script>
+    var email = Cookies.get('Email');
+    console.log(email);
+    socket.emit('get_user_class', email);
+    socket.on('user_class', function (data) {
+      $("#repo").prepend('<li class="collection-header"><h4>Repository class ' + data + '</h4></li>');
+      socket.emit('get_files', data);
+      socket.on('get_files_callback', function (files) {
+        $("#loader").fadeOut(200);
+        var i = 0;
+        files.forEach(item => {
+          $("#repo").append(' <li class="collection-item" style="background-color:transparent;"><div id=' + "info_" + i + '>' + item.fileName +
+            '<a href=' + item.fileDownloadUrl +
+            ' class="secondary-content"><i class="material-icons" style="color:black;">file_download</i></a></div></li>'
+          );
+          var extension = item.fileName.split('.').pop();
+          if (extension == "png" || extension == "jpg") {
+            $("#info_" + i).prepend(
+              '<i class="material-icons" style="color:aqua; vertical-align:middle; margin-right:5px;">collections</i>'
+            );
+          } else if (extension == "pdf") {
+            $("#info_" + i).prepend(
+              '<i class="material-icons" style="color:red; vertical-align:middle; margin-right:5px;"><i class="material-icons">picture_as_pdf</i></i>'
+            );
+          } else {
+            $("#info_" + i).prepend(
+              '<i class="material-icons" style="color:black; vertical-align:middle; margin-right:5px;"><i class="material-icons"><i class="material-icons">insert_drive_file</i></i></i>'
+            );
+          }
+          i++;
+        });
+      });
+    });
+  </script>
+    <div id="watermark"></div>
+  <ul id="repo" class="collection with-header">
+  
+     <center><div class="preloader-wrapper big active" id="loader">
+          <div class="spinner-layer spinner-red-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div></center> 
+  </ul>
+</body>
+
+</html>

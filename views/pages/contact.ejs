@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+      <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+      <link rel="shortcut icon" type="imnage/jpg" href="/images/favicon.jpg" />
+    
+      <!-- Compiled and minified JavaScript -->
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+      <script src="https://apis.google.com/js/platform.js" async defer></script>
+      <div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = 'https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.12';
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="theme-color" content="black" />
+      <title>Gupta Tutorials || Contact</title>
+    <style>
+     #map{
+       height: 300px;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <div class="col s12 m6">
+        <div class="card  darken-1" style="">
+          <div class="card-content white-text">
+            <span class="card-title" style="color:black;">Find Us On Google Maps</span>
+    <div id="map"></div>
+  </div>
+
+</div>
+</div>
+<div class="col s12 m6">
+   <div class="card  darken-1" style="">
+          <div class="card-content white-text">
+            <span class="card-title" style="color:black;">Find Us On Facebook</span>
+  <div class="fb-page" data-href="https://www.facebook.com/satish4903" data-tabs="timeline" data-height="300" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/satish4903" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/satish4903">Gupta tutorial&#039;s-lko cantt</a></blockquote></div></div>
+</div>
+</div>
+</div>
+
+    <script>
+      function initMap() {
+        var uluru = {lat: 26.786238, lng: 80.970853};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 18,
+          center: uluru
+        });
+        var marker = new google.maps.Marker({
+          position: uluru,
+          map: map
+        });
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDA2p79L-C_RAW6xs90r8AOIQ1vGnusDbg&callback=initMap">
+    </script>
+    <div class="col s12">
+      
+    </div>
+  </body>
+</html>

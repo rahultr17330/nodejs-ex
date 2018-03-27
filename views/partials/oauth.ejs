@@ -1,0 +1,480 @@
+<!--Add a button for the user to click to initiate auth sequence -->
+
+<script type="text/javascript">
+	var clientId = '976887664955-8p3cker58prgj3u8nojir7sf603o00nq.apps.googleusercontent.com';
+	var apiKey = 'AIzaSyDA2p79L-C_RAW6xs90r8AOIQ1vGnusDbg';
+	// To enter one or more authentication scopes, refer to the documentation for the API.
+	var scopes = 'https://www.googleapis.com/auth/drive';
+
+	// Use a button to handle authentication the first time.
+	function handleClientLoad() {
+		gapi.client.setApiKey(apiKey);
+		window.setTimeout(checkAuth, 1);
+	}
+
+	function checkAuth() {
+		gapi.auth.authorize({
+			client_id: clientId,
+			scope: scopes,
+			immediate: true
+		}, handleAuthResult);
+	}
+
+	function handleAuthResult(authResult) {
+
+		if (authResult && !authResult.error) {
+			$("#authorize-button").fadeOut(100);
+			$("#req-box").fadeOut(100);
+			makeApiCall(5);
+		} else {
+			$("#authorize-button").click(handleAuthClick());
+
+		}
+	}
+
+	function handleAuthClick(event) {
+		gapi.auth.authorize({
+			client_id: clientId,
+			scope: scopes,
+			immediate: false
+		}, handleAuthResult);
+		return false;
+	}
+
+	function insertFile(fileData, title, callback) {
+		const boundary = '-------314159265358979323846';
+		const delimiter = "\r\n--" + boundary + "\r\n";
+		const close_delim = "\r\n--" + boundary + "--";
+
+		var reader = new FileReader();
+		reader.readAsBinaryString(fileData);
+		reader.onload = function (e) {
+			var contentType = fileData.type || 'application/octet-stream';
+			var metadata = {
+				'title': title,
+				'originalFilename': fileData.name,
+				'mimeType': contentType
+			};
+
+			var base64Data = btoa(reader.result);
+			var multipartRequestBody =
+				delimiter +
+				'Content-Type: application/json\r\n\r\n' +
+				JSON.stringify(metadata) +
+				delimiter +
+				'Content-Type: ' + contentType + '\r\n' +
+				'Content-Transfer-Encoding: base64\r\n' +
+				'\r\n' +
+				base64Data +
+				close_delim;
+
+			var request = gapi.client.request({
+				'path': '/upload/drive/v2/files',
+				'method': 'POST',
+				'params': {
+					'uploadType': 'multipart'
+				},
+				'headers': {
+					'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+				},
+				'body': multipartRequestBody
+			});
+			if (!callback) {
+				callback = function (file) {
+					console.log(file)
+				};
+			}
+			request.execute(callback);
+		}
+	}
+
+	function deleteFile(fileId, callback) {
+		var request = gapi.client.drive.files.delete({
+			'fileId': fileId
+		});
+		request.execute(callback);
+	}
+	// Load the API and make an API call.  Display the results on the screen.
+	function makeApiCall(size) {
+		$("#content").html('');
+		$(".pagination").hide();
+		$("#new").hide();
+		$("#file-loader").show();
+		gapi.client.load('drive', 'v2', function () {
+
+			var request = gapi.client.drive.files.list({
+				'maxResults': size
+			});
+			var file_array = JSON.parse(localStorage.getItem('file_info_database'));
+			request.execute(function (resp) {
+				localStorage.setItem('file_info', JSON.stringify(resp));
+				for (i = 0; i < resp.items.length; i++) {
+					$("#content").append('<li id=' + "fileindex_" + i + '><div class="collapsible-header" index=' + i + ' id=' +
+						"header_" + resp.items[i].id + '><img src=' + resp.items[i].iconLink +
+						' style="margin-right:5px; vertically-align:middle;">' + resp.items[i].title +
+						'</div> <div class="collapsible-body" id=' + "file_" + i + '></div></li>');
+					var file = "#file_" + i;
+					$(file).append('<span><ul class="collection"><li class="collection-item">File Name: ' + resp.items[i].originalFilename +
+						'</li><li class="collection-item">File Modified On: ' + resp.items[i].modifiedDate +
+						'</li><li class="collection-item">File Size: ' + (resp.items[i].fileSize / 1024) / 1024 +
+						' Mb</li><li class="collection-item"><a id=' + "add_" + i +
+						' class="btn-floating  waves-effect waves-light green add_to_db"><i class="material-icons">link</i></a><a id=' +
+						"delete_from_db_" + i +
+						' class="btn-floating  waves-effect waves-light red delete_file_from_db" style="margin-left:5px; display:none;"><i class="material-icons">delete</i></a><a id=' +
+						"download_" + i + ' href=' + JSON.stringify(resp.items[i].webContentLink) +
+						' style="margin-left:5px;" class="btn-floating  waves-effect waves-light black"><i class="material-icons">file_download</i></a><a id=' +
+						"delete_" + i +
+						' class="btn-floating  waves-effect waves-light red delete_file" style="margin-left:5px;"><i class="material-icons">delete_forever</i></a></li></ul><span>'
+					);
+				}
+				selector();
+				$("#file-loader").hide(function () {
+					$(".pagination").show();
+					$("#content").show();
+					$("#new").show();
+				});
+				$(".add_to_db").click(function () {
+					var file_info = JSON.parse(localStorage.getItem('file_info'));
+					var id = $(this).attr("id");
+					var index = id.replace(/^\D+/g, '');;
+					$('#modal5').modal('open');
+					$("#file_class_data").click(function () {
+						var input_class = $("#file_class_input").val();
+						var obj = {
+							fileName: file_info.items[index].originalFilename,
+							class: input_class,
+							fileDownloadUrl: file_info.items[index].webContentLink
+						}
+						socket.emit('add_file_to_db_ext', obj);
+						socket.on('save_file_ext_callback', function (data) {
+
+							$.alert({
+								theme: 'material',
+								type: 'green',
+								title: 'Sucess !',
+								content: 'File Added Succesfully!',
+								buttons: {
+									ok: {
+										text: 'Okay',
+										btnClass: 'btn-green',
+										action: function () {
+											socket.emit('get_file_info');
+											makeApiCall(5);
+										}
+									}
+								}
+							});
+						});
+					});
+
+				});
+
+				function selector() {
+					var file_array = JSON.parse(localStorage.getItem('file_info_database'));
+					console.log("okay");
+					var i, j;
+					var gdrive_file_array = JSON.parse(localStorage.getItem('file_info'));
+					var k = 0;
+					for (i = 0; i < file_array.length; i++) {
+
+						for (j = 0; j < gdrive_file_array.items.length; j++) {
+							var a = (file_array[i].fileName).toUpperCase();
+							if (!gdrive_file_array.items[j].originalFilename) {
+								continue;
+							} else {
+								var b = (gdrive_file_array.items[j].originalFilename).toUpperCase();
+								if (a == b) {
+									var selector = "#header_" + gdrive_file_array.items[j].id;
+									$(selector).append('<span class="new badge" id=' + "badge_" + k + ' data-badge-caption="Linked">' +
+										"Class " + file_array[i].class + '</span>');
+									k++;
+									break;
+								}
+							}
+						}
+					}
+					for (i = 0; i < k; i++) {
+						if ($("#badge_" + i).parent().attr("class") == "collapsible-header") {
+							var index = $("#badge_" + i).parent().attr("index");
+							var selector = "#add_" + index;
+							var selector_b = "#delete_from_db_" + index;
+							$(selector).hide();
+							$(selector_b).show();
+						}
+					}
+				}
+
+				$(".delete_file").click(function (event) {
+					var id = $(this).attr("id");
+					var parent = $(this).parent().parent().parent().parent().parent().attr("id");
+					parent = "#" + parent;
+					var index = id.replace(/^\D+/g, '');
+
+					var record = JSON.parse(localStorage.getItem('file_info'));
+					var fileid = record.items[index].id;
+
+					$.confirm({
+						theme: 'material',
+						title: 'Confirm Deletion !',
+						type: 'red',
+						content: "This Will Remove File From Google Drive And The Database . Are You Sure You Want to remove " +
+							record.items[index].title + "'s record ? ",
+						buttons: {
+							confirm: {
+								text: 'Confirm',
+								btnClass: 'btn-red',
+								action: function () {
+									deleteFile(fileid, function () {
+										$.alert({
+											theme: 'material',
+											type: 'green',
+											title: 'Sucess !',
+											content: 'File Delete Succesfully!',
+											buttons: {
+												ok: {
+													text: 'Okay',
+													btnClass: 'btn-green',
+													action: function () {
+														var record = JSON.parse(localStorage.getItem('file_info'));
+														record.items.splice(index, 1);
+														$(parent).remove();
+														localStorage.setItem('file_info', JSON.stringify(record));
+													}
+												}
+											}
+										});
+									});
+								}
+							},
+							cancel: function () {
+								Materialize.toast('Cancelled!', 4000);
+							}
+						}
+					});
+				});
+				$(".delete_file_from_db").click(function () {
+					var id = $(this).attr("id");
+					var index = id.replace(/^\D+/g, '');
+					var record = JSON.parse(localStorage.getItem('file_info'));
+					console.log(record.items[index].originalFilename);
+
+
+					$.confirm({
+						theme: 'material',
+						title: 'Confirm Deletion !',
+						type: 'red',
+						content: "This Will Remove File  The Database . Are You Sure You Want to remove " + record.items[index].title +
+							"'s record ? ",
+						buttons: {
+							confirm: {
+								text: 'Confirm',
+								btnClass: 'btn-red',
+								action: function () {
+									socket.emit('delete_file_from_db', record.items[index].originalFilename);
+									socket.on('delete_file_from_db_callback', function (data) {
+
+										$.alert({
+											theme: 'material',
+											type: 'green',
+											title: 'Sucess !',
+											content: 'File Delete Succesfully!',
+											buttons: {
+												ok: {
+													text: 'Okay',
+													btnClass: 'btn-green',
+													action: function () {
+														socket.emit('get_file_info');
+														makeApiCall(5);
+													}
+												}
+											}
+										});
+									});
+								}
+							},
+							cancel: function () {
+								Materialize.toast('Cancelled!', 4000);
+							}
+						}
+					});
+
+				});
+			});
+
+		});
+
+
+	}
+</script>
+<script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+<script src="/js/oauthgdrive.js"></script>
+<div id="req-box" class="col s12">
+	<center>
+		<p>Before Contuning You Need To Grant Permission To Acces You Google Drive Contents
+		</p>
+		<br>
+		<a id="authorize-button" class="waves-effect waves-light btn black">Authorize</a>
+	</center>
+</div>
+<center>
+	<div class="preloader-wrapper big active" style="display:none; margin-top:10px;" id="file-loader">
+		<div style="border-color:black;" class="spinner-layer spinner-blue-only">
+			<div class="circle-clipper left">
+				<div class="circle"></div>
+			</div>
+			<div class="gap-patch">
+				<div class="circle"></div>
+			</div>
+			<div class="circle-clipper right">
+				<div class="circle"></div>
+			</div>
+		</div>
+	</div>
+
+	<div id="modal5" class="modal ">
+		<div class="modal-content">
+
+			<div class="input-field col s12">
+				<select id="file_class_input" required>
+					<option value="" disabled selected>Choose The Class</option>
+					<option value="IX">IX</option>
+					<option value="X">X</option>
+					<option value="XI">XI</option>
+					<option value="XII">XII</option>
+				</select>
+				<label>Class</label>
+			</div>
+			<button class="btn waves-effect waves-light" id="file_class_data">Submit
+				<i class="material-icons right">send</i>
+			</button>
+		</div>
+	</div>
+	<ul class="pagination" style="display:none;">
+
+		<li onclick="makeApiCall(5)" class="waves-effect">
+			<a href="#!">5</a>
+		</li>
+		<li onclick="makeApiCall(8)" class="waves-effect">
+			<a href="#!">8</a>
+		</li>
+		<li onclick="makeApiCall(18)" class="waves-effect">
+			<a href="#!">18</a>
+		</li>
+		<li onclick="makeApiCall(20)" class="waves-effect">
+			<a href="#!">20</a>
+		</li>
+		<li onclick="makeApiCall(50)" class="waves-effect">
+			<a href="#!">50</a>
+		</li>
+
+	</ul>
+</center>
+<div class="row">
+	<a class="btn-floating btn-large black modal-trigger" href="#modal4" id="new" style="float: right; margin-right:5px; display:none;">
+		<i class="material-icons">cloud_upload</i>
+	</a>
+</div>
+<ul id="content" style="display:none;" class="collapsible" data-collapsible="accordion">
+
+</ul>
+<div id="modal4" class="modal">
+	<div class="modal-content">
+		<form action="#">
+			<div class="input-field col s12">
+				<input id="title" type="text" class="validate" required>
+				<label for="title">Title</label>
+			</div>
+
+			<div class="file-field input-field">
+				<div class="btn">
+					<span>File</span>
+					<input id="fileinput" type="file" required>
+				</div>
+				<div class="file-path-wrapper">
+					<input class="file-path validate" type="text">
+				</div>
+			</div>
+			<div class="row">
+				<input type="checkbox" id="go_to_db" todb="false" />
+				<label for="go_to_db">Add To Database</label>
+			</div>
+			<div class="row" id="to_db" style="display:none;">
+				<div class="input-field col s12">
+					<select id="file_class" required>
+						<option value="" disabled selected>Choose The Class</option>
+						<option value="IX">IX</option>
+						<option value="X">X</option>
+						<option value="XI">XI</option>
+						<option value="XII">XII</option>
+					</select>
+					<label>Class</label>
+				</div>
+			</div>
+		</form>
+		<button class="btn waves-effect waves-light" type="submit" name="action" id="insert_data">Submit
+			<i class="material-icons right">send</i>
+		</button>
+	</div>
+</div>
+<script>
+	$("#insert_data").click(function () {
+
+		var file = $("#fileinput")[0].files[0];
+		var title = $("#title").val();
+		insertFile(file, title, function (callback) {
+			console.log(callback);
+			$("#fileinput").val("");
+			$("#title").val("");
+			$.alert({
+				theme: 'material',
+				type: 'green',
+				title: 'Sucess !',
+				content: 'File ' + callback.originalFilename + ' Uploaded Succesfully!',
+				buttons: {
+					ok: {
+						text: 'Okay',
+						btnClass: 'btn-green',
+						action: function () {
+							if ($("#go_to_db").attr("todb") == "true") {
+								var obj = {
+									fileName: callback.originalFilename,
+									fileDownloadUrl: callback.webContentLink,
+									class: $("#file_class").val()
+								}
+								socket.emit("add_file_to_database", obj);
+								socket.on('save_file_callback', function (data) {
+									$.alert({
+										theme: 'material',
+										type: 'green',
+										title: 'Sucess !',
+										content: ' Message: ' + data,
+										buttons: {
+											ok: {
+												text: 'Okay',
+												btnClass: 'btn-green',
+												action: function () {
+													socket.emit('get_file_info');
+													makeApiCall(5);
+												}
+											}
+										}
+									});
+								});
+							}
+						}
+					}
+				}
+			});
+		});
+	});
+	$("#go_to_db").click(function () {
+		if ($(this).attr("todb") == "false") {
+			$(this).attr("todb", "true");
+		} else if ($(this).attr("todb") == "true") {
+			$(this).attr("todb", "false");
+		}
+		$("#to_db").toggle(100);
+	});
+</script>
+
+</script>

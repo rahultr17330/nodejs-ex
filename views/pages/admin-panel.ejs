@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+  <link rel="shortcut icon" type="imnage/jpg" href="/images/favicon.jpg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+  <!-- Compiled and minified JavaScript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+  <script src="/js/js.cookie.js"></script>
+  <script src="/js/verify.js"></script>
+  <script src="/js/circle.js"></script>
+  <script src="/js/adminpanel.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+  <script type="text/javascript">
+    var socket = io();
+  </script>
+  <!--
+  FOR_LOCAL_USE::164256044733-q6dqe0qvbsaagg9btk6n15hhbifq62uj.apps.googleusercontent.com
+  FOR_OAUTH_AT_URL::51253301414-qe9vshrhsmtdpves92krqtna4ar2aato.apps.googleusercontent.com
+-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="black" />
+  <title>GT || Admin-Panel</title>
+  <style>
+    .tabs.tabs-transparent .indicator {
+      background-color: #f50510;
+    }
+
+    .tabs .tab a {
+      color: rgb(0, 0, 0);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav-extended">
+    <div class="nav-wrapper" style="background-color: rgb(255, 255, 255);">
+      <ul id="nav-mobile" class="left hide-on-med-and-down">
+        <li>
+          <a class="text" href="#" style="font-family: 'Lato', sans-serif; font-size:25px;font-weight:bold; color:black;">
+            Admin-panel</a>
+        </li>
+      </ul>
+      <a href="#" class="brand-logo center">
+        <img src="/images/logo_normal.svg" style="height:48px;width:48px; vertical-align:middle;">
+      </a>
+      <a href="#" data-activates="mobile-demo" class="button-collapse">
+        <i class="material-icons">menu</i>
+      </a>
+      <ul id="nav-mobile" class="right show-on-med-and-down">
+        <li data-activates="slide-out" class="button-collapse" style="margin-right: 5px; ">
+          <i class="material-icons" style="color:black;">menu</i>
+        </li>
+      </ul>
+    </div>
+    <div class="nav-content" style="background-color: rgb(255, 255, 255); color:black;">
+      <ul class="tabs tabs-transparent">
+        <li class="tab">
+          <a style="color:black;" class="active" href="#overview">Overview</a>
+        </li>
+        <li class="tab">
+          <a style="color:black;" href="#uploads">File manager</a>
+        </li>
+        <li class="tab">
+          <a style="color:black;" href="#database">User Management</a>
+        </li>
+        <li class="tab">
+          <a style="color:black;" href="#fee">Fee Management</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div id="overview" class="col s12">
+    <ul class="collapsible popout" data-collapsible="accordion">
+      <li>
+        <div class="collapsible-header">
+          <i class="material-icons">filter_drama</i>Database</div>
+        <div class="collapsible-body">
+          <div class="row">
+            <div class="col s12 m6">
+              <div class="card">
+                <div class="card-image">
+                  <center>
+                    <div stye="display:block;" class="circle" id="circles-1"></div>
+                  </center>
+
+                </div>
+                <center>
+                  <h4 class="card-title" id="name"></h4>
+                </center>
+                <div class="card-content">
+                  <p>
+                    <h7>Provider:AWS</h7>
+                    <br>
+                    <h7>Maximum-size:512 Mb</h7>
+                    <br>
+                    <h7>Hosting-Platform:MongoDb Atlas</h7>
+                    <br>
+                    <h7 id="csize"></h7>
+                    <br>
+                    <h7>Type:
+                      <img src="/images/mongodb.svg" style="vertical-align:middle; margin:0px; height:128px;width:128px;">
+                    </h7>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col s12 m6">
+              <div class="card">
+                <div class="card-image">
+                  <center>
+                    <div stye="display:block;" class="circle" id="circles-2"></div>
+                  </center>
+
+                </div>
+                <center>
+                  <h4 class="card-title" id="nameb"></h4>
+                </center>
+                <div class="card-content">
+                  <p>
+                    <h7>Provider:mLab</h7>
+                    <br>
+                    <h7>Maximum-size:500 Mb</h7>
+                    <br>
+                    <h7>Hosting-Platform:mLab</h7>
+                    <br>
+                    <h7 id="csizeb"></h7>
+                    <br>
+                    <h7>Type:
+                      <img src="/images/mongodb.svg" style="vertical-align:middle; margin:0px; height:128px;width:128px;">
+                    </h7>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="collapsible-header">
+          <i class="material-icons">place</i>Quotations</div>
+        <div class="collapsible-body">
+          <span>Lorem ipsum dolor sit amet.</span>
+        </div>
+      </li>
+      <li>
+        <div class="collapsible-header">
+          <i class="material-icons">whatshot</i>Third</div>
+        <div class="collapsible-body">
+          <span>Lorem ipsum dolor sit amet.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="uploads" class="col s12">
+    <%- include ../partials/oauth %>
+  </div>
+  <div id="database" class="col s12">
+
+    <div class="col s12" style="opacity:1.0;">
+      <ul class="tabs">
+        <li class="tab col s3">
+          <a href="#class9">Class 9</a>
+        </li>
+        <li class="tab col s3">
+          <a class="active" href="#class10">Class 10</a>
+        </li>
+        <li class="tab col s3 ">
+          <a href="#class11">class 11</a>
+        </li>
+        <li class="tab col s3">
+          <a href="#class12">Class 12</a>
+        </li>
+      </ul>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large black">
+          <i class="large material-icons">dashboard</i>
+        </a>
+        <ul>
+          <li>
+            <a class="btn-floating red">
+              <i class="material-icons">help_outline</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating yellow darken-1">
+              <i class="material-icons">search</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating green">
+              <i class="material-icons">sort_by_alpha</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating blue modal-trigger" href="#modal1">
+              <i class="material-icons">add_circle_outline</i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div id="class9" class="col s12">
+      <center>
+        <div class="preloader-wrapper big active" id="user-table-9-loader">
+          <div class="spinner-layer spinner-green-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </center>
+      <ul class="collapsible" data-collapsible="accordion" id="user-table-9">
+      </ul>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large black">
+          <i class="large material-icons">dashboard</i>
+        </a>
+        <ul>
+          <li>
+            <a class="btn-floating red">
+              <i class="material-icons">help_outline</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating yellow darken-1">
+              <i class="material-icons">search</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating green">
+              <i class="material-icons">sort_by_alpha</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating blue modal-trigger" href="#modal1">
+              <i class="material-icons">add_circle_outline</i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div id="class10" class="col s12">
+      <center>
+        <div class="preloader-wrapper big active" id="user-table-10-loader">
+          <div class="spinner-layer spinner-red-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </center>
+      <ul class="collapsible" data-collapsible="accordion" id="user-table-10">
+      </ul>
+    </div>
+    <div id="class11" class="col s12">
+      <center>
+        <div class="preloader-wrapper big active" id="user-table-11-loader">
+          <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </center>
+      <ul class="collapsible" data-collapsible="accordion" id="user-table-11">
+      </ul>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large black">
+          <i class="large material-icons">dashboard</i>
+        </a>
+        <ul>
+          <li>
+            <a class="btn-floating red">
+              <i class="material-icons">help_outline</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating yellow darken-1">
+              <i class="material-icons">search</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating green">
+              <i class="material-icons">sort_by_alpha</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating blue modal-trigger" href="#modal1">
+              <i class="material-icons">add_circle_outline</i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div id="class12" class="col s12">
+      <div id="modal2" class="modal">
+        <div class="modal-footer" style="margin-top:0px;">
+          <div class="input-field col s12 " style="margin-top:0px; margin-bottom:0px;">
+            <i class="material-icons prefix" style="vertical-align:middle;">search</i>
+            <input placeholder="Type to search" id="search_box" type="text" class="dropdown-button" data-beloworigin="true" href='#'
+              data-activates='dropdown1'>
+          </div>
+        </div>
+      </div>
+      <center>
+        <div class="preloader-wrapper big active" id="user-table-12-loader">
+          <div class="spinner-layer spinner-black-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </center>
+      <ul class="collapsible" data-collapsible="accordion" id="user-table-12">
+      </ul>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large black">
+          <i class="large material-icons">dashboard</i>
+        </a>
+        <ul>
+          <li>
+            <a class="btn-floating red">
+              <i class="material-icons">help_outline</i>
+            </a>
+          </li>
+          <li id="search_12_btn">
+            <a class="btn-floating yellow darken-1  modal-trigger" href="#modal2">
+              <i class="material-icons">search</i>
+            </a>
+          </li>
+          <li id="sort_12">
+            <a class="btn-floating green">
+              <i class="material-icons">sort_by_alpha</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating blue modal-trigger" href="#modal1">
+              <i class="material-icons">add_circle_outline</i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+
+
+
+
+    <div id="modal1" class="modal modal-fixed-footerrs">
+      <div class="modal-content">
+        <div class="row">
+          <form class="col s12">
+            <div class="row">
+              <div class="input-field col s6">
+                <input id="last_name" type="text" class="validate" required>
+                <label for="last_name">Name</label>
+              </div>
+              <div class="input-field col s6">
+                <input id="address" type="text" class="validate" required>
+                <label for="address">address</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <select id="class" required>
+                  <option value="" disabled selected>Choose The Class</option>
+                  <option value="IX">IX</option>
+                  <option value="X">X</option>
+                  <option value="XI">XI</option>
+                  <option value="XII">XII</option>
+                </select>
+                <label>Class</label>
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="contact" type="tel" class="validate" required>
+                <label for="contact">Contact</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="email" type="email" class="validate" required>
+                <label for="email">Email</label>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn waves-effect waves-light" type="submit" name="action" id="insert_record">Submit
+          <i class="material-icons right">send</i>
+        </button>
+        <button class="modal-action modal-close waves-effect btn waves-effect waves-light">Close
+        </button>
+      </div>
+    </div>
+
+  </div>
+  <div id="fee" class="col s12">Constructing....</div>
+  <script src="/js/adminextended.js"></script>
+</body>
+
+</html>

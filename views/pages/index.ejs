@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+  <link rel="shortcut icon" type="imnage/jpg" href="/images/favicon.jpg" />
+
+  <!-- Compiled and minified JavaScript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+  <script src="/js/js.cookie.js"></script>
+  <script src="/js/verify.js"></script>
+  <!--
+  FOR_LOCAL_USE::164256044733-q6dqe0qvbsaagg9btk6n15hhbifq62uj.apps.googleusercontent.com
+  FOR_OAUTH_AT_URL::51253301414-qe9vshrhsmtdpves92krqtna4ar2aato.apps.googleusercontent.com
+-->
+<meta name="google-site-verification" content="D21pnjsegX6o2nqd6VGaDaZKoZVpKjKra4_NjTE8vt8" />
+  <meta name="google-signin-client_id" content="164256044733-q6dqe0qvbsaagg9btk6n15hhbifq62uj.apps.googleusercontent.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="black" />
+  <title>Gupta Tutorials</title>
+</head>
+
+<body>
+  <script>
+    Cookies.set("verification_call", 0);
+  </script>
+  <div class="navbar-fixed">
+    <nav style="background-color: rgb(255, 255, 255);">
+      <div class="nav-wrapper">
+        <ul id="nav-mobile" class="left hide-on-med-and-down">
+          <li>
+            <a class="text" href="#" style="font-family: 'Lato', sans-serif; font-size:25px;font-weight:bold; color:black;">
+              Gupta Tutorials</a>
+          </li>
+        </ul>
+
+        <a href="#" class="brand-logo center">
+          <img src="/images/logo_normal.svg" style="height:48px;width:48px; vertical-align:middle;">
+        </a>
+
+        <ul id="nav-mobile" class="right show-on-med-and-down">
+          <li data-activates="slide-out" class="button-collapse" style="margin-right: 5px; ">
+            <i class="material-icons" style="color:black;">menu</i>
+          </li>
+        </ul>
+        <ul id="nav-mobilbe" class="right hide-on-med-and-down" style="font-family: 'Lato', sans-serif; font-weight:bold;">
+
+          <li>
+            <a class="waves-effect" style="color:black" href="/contact">Contact</a>
+          </li>
+          <li>
+            <a class="waves-effect" style="color:black" href="/blog">Blog</a>
+          </li>
+          <li id="resourcesb"></li>
+          <li id="admin-panel"></li>
+          <li style=" display: none;" id="verificationb">
+            <center>
+              <span>
+                <div class="preloader-wrapper small active" style="vertical-align: middle;">
+                  <div class="spinner-layer" style="border-color:black;">
+                    <div class="circle-clipper left">
+                      <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                      <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                      <div class="circle"></div>
+                    </div>
+                  </div>
+                </div>
+                <a style="font-family: 'Lato', sans-serif; display:inline;color:black; font-weight:bold;">Verifiying You..</h6>
+              </span>
+            </center>
+          </li>
+          <li stye="margin:0px;" id="siginb">
+            <a class="btn wave-effect" style="color: black; background-color: transparent; border: none; box-shadow: none; line-height: 0px;">
+              <center>
+                <div style="  vertical-align:bottom; width:200px; text-align: center;" class="g-signin2" data-onsuccess="onSignIn"></div>
+              </center>
+            </a>
+
+          </li>
+          <li stye="margin:0px;" id="continue_buttonb"></li>
+          <li stye="margin:0px;" id="errorb" style="display:none;background-color:rgb(247, 2, 43); color:rgb(255, 255, 255);">
+            <a>ERR::USR_NOT_FOUND_
+              <i class="material-icons" id="retryb" style="color:rgb(0, 0, 0); cursor:pointer; display:inline; vertical-align:middle;">replay</i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <br>
+  <center>
+    <div><%- include contact %></div>
+    <div>
+      <h4>Under Construction !!!</h4>
+      <img src="/images/logo_normal.svg" style="height:64px; width:64px; float:middle; margin-top:200px;">
+      <h6> © 2018 Gupta Tutorials</h6>
+      <h5>Coded With
+        <i class="material-icons" style="color:crimson; vertical-align:middle;">favorite</i> By RT </h5>
+    </div>
+  </center>
+  <ul id="slide-out" class="side-nav">
+    <li>
+      <center>
+        <img src="/images/logo_normal.svg" style="height:128px; width:128px; margin-top:4px; ">
+      </center>
+    </li>
+    <li>
+      <a class="text" href="#" style="font-family: 'Lato', sans-serif; font-size:25px;font-weight:bold; color:black;">
+        Gupta Tutorials</a>
+    </li>
+    <li>
+      <a> © 2018 Gupta Tutorials</a>
+    </li>
+    <li>
+      <a class="waves-effect" href="#!">Home</a>
+    </li>
+    <li>
+      <a class="waves-effect" href="#!">Blog</a>
+    </li>
+    <li>
+      <a class="waves-effect" href="/contact">Contact</a>
+    </li>
+    <li id="resources"></li>
+    <li id="admin-panelb"></li>
+    <li>
+      <div class="divider"></div>
+    </li>
+    <li>
+      <a class="subheader">Please Login !!</a>
+    </li>
+    <li>
+      <center>
+        <span id="verification" style="display: none;">
+          <div class="preloader-wrapper small active">
+            <div class="spinner-layer" style="border-color:black;">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+          <h6 style="font-family: 'Lato', sans-serif; font-weight:bold;">Verifiying You..</h6>
+        </span>
+      </center>
+    </li>
+    <li>
+      <a class="btn wave-effect" id="sigin" style="color: black; background-color: transparent; border: none; box-shadow: none; line-height: 0px;">
+        <center>
+          <div style="  vertical-align:bottom; width:200px; text-align: center;" class="g-signin2" data-onsuccess="onSignIn"></div>
+        </center>
+      </a>
+
+    </li>
+    <li id="continue_button"></li>
+    <li id="error" style="display:none;background-color:rgb(247, 2, 43); color:rgb(255, 255, 255); ">
+      <a>ERR::USR_NOT_FOUND_
+        <i class="material-icons" id="retry" style="color:rgb(0, 0, 0);  vertical-align:middle; cursor:pointer;">replay</i>
+      </a>
+    </li>
+    <li>
+      <a href="/resources" class="waves-effect waves-light btn" id="continue" style="display:none; background-color: rgb(252, 0, 34); color:#fdfdfd">Continue
+        <i class="material-icons right" style="color: white;">send</i>
+      </a>
+    </li>
+  </ul>
+  <div class="fixed-action-btn">
+      <a class="btn-floating btn-large black" href="/chat">
+          <i class="large material-icons">chat_bubble_outline</i>
+      </a>
+      </div>
+  <script type="text/javascript">
+    function onSignIn(googleUser) {
+      var profile = googleUser.getBasicProfile();
+      var name = profile.getGivenName();
+      var email = profile.getEmail();
+      var img = profile.getImageUrl();
+      var ID = profile.getId();
+      Cookies.set("name", name);
+      Cookies.set("Email", email);
+      Cookies.set("imageurl", img);
+      Cookies.set('id', ID);
+
+      $('.homelogin').hide(function () {
+        $('#homecontinue').show();
+      });
+      $('#sigin').hide(function () {
+        $('#siginb').hide(function () {
+          $('#verificationb').show();
+          $('#verification').show();
+          verify();
+        });
+      });
+
+    }
+    $(".button-collapse").sideNav();
+    $('#error').click(function () {
+      $('#error').hide(function () {
+        $("#sigin").show();
+      });
+    });
+    $('#errorb').click(function () {
+      $('#errorb').hide(function () {
+        $("#siginb").show();
+      });
+    });
+  </script>
+  <!--Verification Script -->
+
+</body>
+
+</html>
