@@ -38,7 +38,7 @@ if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
   
 }
 global.databaseUrl = mongoURL;
-console.log(global.databaseUrl);
+
 verify.dbinfo(global.databaseUrl,function(response){
   console.log(response);
 });
