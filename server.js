@@ -159,7 +159,7 @@ io.on('connection', function (socket) {
   socket.on('database-size', function () {
     admin_calls.get_database_size(function (result) {
      var  db_array= result;
-     db_array.name = mongoHost;
+     db_array.name = mongoURL;
         socket.emit('database-size-return', db_array);
       });
     });
