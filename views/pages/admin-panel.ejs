@@ -6,6 +6,9 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <!--Import materialize.css-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  
+<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono" rel="stylesheet">
+
   <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
   <link rel="shortcut icon" type="imnage/jpg" href="/images/favicon.jpg" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
@@ -33,6 +36,73 @@
     .tabs .tab a {
       color: rgb(0, 0, 0);
     }
+
+  blockquote{
+    margin: 0px 0;
+    padding-left: 1.5rem;
+    border-left: 2px solid #ee6e73;
+  }
+  p{
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+
+input:not([type]):focus:not([readonly]), input[type=text]:not(.browser-default):focus:not([readonly]), input[type=password]:not(.browser-default):focus:not([readonly]), input[type=email]:not(.browser-default):focus:not([readonly]), input[type=url]:not(.browser-default):focus:not([readonly]), input[type=time]:not(.browser-default):focus:not([readonly]), input[type=date]:not(.browser-default):focus:not([readonly]), input[type=datetime]:not(.browser-default):focus:not([readonly]), input[type=datetime-local]:not(.browser-default):focus:not([readonly]), input[type=tel]:not(.browser-default):focus:not([readonly]), input[type=number]:not(.browser-default):focus:not([readonly]), input[type=search]:not(.browser-default):focus:not([readonly]), textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom: none;
+    -webkit-box-shadow:none; 
+     box-shadow: none;
+}
+/* change font size to change size */
+
+#loader {
+  font-size: 10px;
+  position: relative;
+  width: 4em;
+  height: 0em;
+  margin: 10px auto;
+}
+
+.dot {
+  width: 1em;
+  height: 1em;
+  border-radius: 0.5em;
+  background: #cecccc;
+  position: absolute;
+  animation-duration: 0.5s;
+  animation-timing-function: ease;
+  animation-iteration-count: infinite;
+}
+
+.dot1, .dot2 {
+  left: 0;
+}
+
+.dot3 { left: 1.5em; }
+
+.dot4 { left: 3em; }
+
+@keyframes reveal {
+  from { transform: scale(0.001); }
+  to { transform: scale(1); }
+}
+
+@keyframes slide {
+  to { transform: translateX(1.5em) }
+}
+
+
+.dot1 {
+  animation-name: reveal;
+}
+
+.dot2, .dot3 {
+  animation-name: slide;
+}
+
+.dot4 {
+  animation-name: reveal;
+  animation-direction: reverse; /* thx @HugoGiraudel */
+}
   </style>
 </head>
 
@@ -72,7 +142,7 @@
           <a style="color:black;" href="#fee">Fee Management</a>
         </li>
          <li class="tab">
-          <a style="color:black;" href="#shell">Fee Management</a>
+          <a style="color:black;" href="#shell">Shell</a>
         </li>
       </ul>
     </div>
