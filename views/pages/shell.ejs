@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Shell
+	</title>
+	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+  <meta name="theme-color" content="black" />
+  <style>
+
+	blockquote{
+		margin: 0px 0;
+    padding-left: 1.5rem;
+    border-left: 2px solid #ee6e73;
+	}
+	p{
+		font-family: 'IBM Plex Mono', monospace;
+	}
+
+
+input:not([type]):focus:not([readonly]), input[type=text]:not(.browser-default):focus:not([readonly]), input[type=password]:not(.browser-default):focus:not([readonly]), input[type=email]:not(.browser-default):focus:not([readonly]), input[type=url]:not(.browser-default):focus:not([readonly]), input[type=time]:not(.browser-default):focus:not([readonly]), input[type=date]:not(.browser-default):focus:not([readonly]), input[type=datetime]:not(.browser-default):focus:not([readonly]), input[type=datetime-local]:not(.browser-default):focus:not([readonly]), input[type=tel]:not(.browser-default):focus:not([readonly]), input[type=number]:not(.browser-default):focus:not([readonly]), input[type=search]:not(.browser-default):focus:not([readonly]), textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom: none;
+    -webkit-box-shadow:none; 
+     box-shadow: none;
+}
+/* change font size to change size */
+
+#loader {
+  font-size: 10px;
+  position: relative;
+  width: 4em;
+  height: 0em;
+  margin: 10px auto;
+}
+
+.dot {
+  width: 1em;
+  height: 1em;
+  border-radius: 0.5em;
+  background: #cecccc;
+  position: absolute;
+  animation-duration: 0.5s;
+  animation-timing-function: ease;
+  animation-iteration-count: infinite;
+}
+
+.dot1, .dot2 {
+  left: 0;
+}
+
+.dot3 { left: 1.5em; }
+
+.dot4 { left: 3em; }
+
+@keyframes reveal {
+  from { transform: scale(0.001); }
+  to { transform: scale(1); }
+}
+
+@keyframes slide {
+  to { transform: translateX(1.5em) }
+}
+
+
+.dot1 {
+  animation-name: reveal;
+}
+
+.dot2, .dot3 {
+  animation-name: slide;
+}
+
+.dot4 {
+  animation-name: reveal;
+  animation-direction: reverse; /* thx @HugoGiraudel */
+}
+
+</style>
+</head>
+<body>
+ <div class="row">
+    <div class="col s12 m12">
+      <div class="card" style="background-color: black;">
+        <div class="card-content">
+        	<div id="exec"  style="color: #cecccc; font-size:12px;">
+
+        	</div>
+        	
+  
+      <input value=">$ " id="scriptBox" type="text" style="border: none;
+    border-bottom:0px;
+    border-radius: 0; 
+    outline: 0px;
+    height: 3rem;
+    width: 100%;
+    font-size: 12px;
+    color: #ffffff;
+    font-family: 'IBM Plex Mono', monospace;
+    margin: 0 0 0px 0; 
+    padding: 0;
+     border-bottom: none;
+    -webkit-box-shadow:none; 
+     box-shadow: none;
+">
+   <div id="loader" style="display: none; color:white">
+ <center> <div class="dot dot1"></div>
+  <div class="dot dot2"></div>
+  <div class="dot dot3"></div>
+  <div class="dot dot4"></div></center>
+</div>
+  
+        </div>
+        <script type="text/javascript">
+        	var i=1;
+          var socket = io();
+        	$('input[type=text]').on('keydown', function(e) {
+             var script = $(this).val().replace('$','').replace('>','').replace(" ",'');
+    if (e.which == 13) {
+        e.preventDefault();
+       console.log(script.length);
+       if(script == "clear"){
+       	$("#exec").html("");
+       	$(this).val(">$ ");
+       	i=1;
+       }
+       else{
+       	$(this).val(">$ ");
+		$("#exec").append('<p>'+ i +'.<font color="#ff071a">> $ </font> '+ script+'</p>');
+		i++;
+		$("input").hide(10,function(){
+			$("#loader").show();
+      var random = Math.floor(Math.random()*1000);
+      socket.emit('shell_exec',{sc:script,id:random});
+      socket.on('shell_exec_response_'+script+random,function(data){
+        if(!data.code == 0){
+          $("#exec").append('<p> ERR! <br> CODE : '+data.code+'</p>');
+        }
+        else{
+        $("#exec").append('<p>'+ data.result +'<br> CODE : '+data.code+'</p>');
+      }
+        $("#loader").hide(10,function(){
+          $("input").show();
+        });
+      });
+		});
+       }
+    	
+    }
+     else if (e.which == 38) {
+      $("input").val(">$ "+script);
+     }
+});
+        </script>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
