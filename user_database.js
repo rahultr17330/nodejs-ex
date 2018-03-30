@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 module.exports.dbinfo = function(mongourl){
 if(mongourl){
     var database = mongoose.createConnection(mongourl);
-var schema_user_record = mongoose.Schema({
+var schema_user_record = new mongoose.Schema({
     name: String,
     contact: Number,
     class: String,
@@ -10,7 +10,7 @@ var schema_user_record = mongoose.Schema({
     address: String
 });
 var user_record = database.model('user_record', schema_user_record);
-var file_schema = mongoose.Schema({
+var file_schema = new mongoose.Schema({
     fileName: String,
     fileDownloadUrl: String,
     class: String
