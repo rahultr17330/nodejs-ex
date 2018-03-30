@@ -159,7 +159,7 @@ io.on('connection', function (socket) {
   socket.on('user_verification', function (user_data) {
     verify.confirm(user_data, function (status) {
       var unique_id = "verification_callback_" + user_data.user_email;
-      global.authentication_status = 2;
+      global.authentication_status = status;
 
       global.user_email = user_data.user_email;
       socket.emit(unique_id, {
