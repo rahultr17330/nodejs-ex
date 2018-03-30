@@ -49,31 +49,12 @@ socket.on('user_records_return_9', function (data) {
 
 socket.on('database-size-return', function (data) {
     console.log(data);
-    $("#name").text("Databse name: " + data[0].name);
-    $("#csize").text("Current size: " + data[0].size + " Mb");
+    $("#name").text("Databse name: " + data.name);
+    $("#csize").text("Current size: " + data.size + " Mb");
     var myCircle = Circles.create({
         id: 'circles-1',
         radius: 60,
-        value: (data[0].size / 512) * 100,
-        maxValue: 100,
-        width: 10,
-        text: function (value) {
-            return value + '%';
-        },
-        colors: ['#D3B6C6', '#4B253A'],
-        duration: 400,
-        wrpClass: 'circles-wrp',
-        valueStrokeClass: 'circles-valueStroke',
-        maxValueStrokeClass: 'circles-maxValueStroke',
-        styleWrapper: true,
-        styleText: true
-    });
-    $("#nameb").text("Databse name: " + data[1].name);
-    $("#csizeb").text("Current size: " + data[1].size + " Mb");
-    var myCircle = Circles.create({
-        id: 'circles-2',
-        radius: 60,
-        value: (data[1].size / 500) * 100,
+        value: (data.size / 1024) * 100,
         maxValue: 100,
         width: 10,
         text: function (value) {

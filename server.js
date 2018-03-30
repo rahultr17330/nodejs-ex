@@ -156,16 +156,12 @@ io.on('connection', function (socket) {
     });
   });
   socket.on('database-size', function () {
-    var db_array = [];
     admin_calls.get_database_size(function (result) {
-      db_array[0] = result;
-      admin_calls.get_database_size_normal(function (data) {
-        db_array[1] = data;
+     var  db_array= result;
+     result.name = mongoHost;
         socket.emit('database-size-return', db_array);
       });
     });
-
-  });
   socket.on('get_file_info', function () {
     admin_calls.get_file_info(function (data) {
       socket.emit('get_file_info_callback', data);
