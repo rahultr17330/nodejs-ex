@@ -10,7 +10,7 @@ var schema_user_record = new mongoose.Schema({
     address: String
 });
 var user_record = database.model('user_record', schema_user_record);
-var file_schema = new mongoose.Schema({
+var file_schema = mongoose.Schema({
     fileName: String,
     fileDownloadUrl: String,
     class: String
@@ -20,19 +20,27 @@ module.exports.get_database_size = function (response) {
     user_record.collection.stats({
         scale: 1024
     }, function (err, results) {
-           global.sizeofa = (results.storageSize) / 1024;
-        });
-        file_record.collection.stats({
-            scale: 1024
-        }, function (err, results) {
-            var object = {
-                size: (results.storageSize) / 1024 + global.sizeofa,
-                indicies: results.nindexes,
-                name: results.ns
-            }
-        });
+        var obj = {
+            size: (results.storageSize) / 1024,
+            indicies: results.nindexes,
+            name: results.ns
+        }
+        response(obj);
+
+    });
+}
+module.exports.get_database_size_normal = function (response) {
+    file_record.collection.stats({
+        scale: 1024
+    }, function (err, results) {
+        var object = {
+            size: (results.storageSize) / 1024,
+            indicies: results.nindexes,
+            name: results.ns
+        }
         response(object);
 
+    });
 }
 module.exports.get_user_class = function (data, response) {
     var mail = data;
