@@ -1,4 +1,4 @@
-socket.emit('database-size');
+
 //class 12
 $("#user-table-12-loader").show();
 socket.emit('get_users_12');
@@ -46,7 +46,7 @@ socket.on('user_records_return_9', function (data) {
         table.innerHTML += '<li><div class="collapsible-header">Name: ' + item.name + ' Class: ' + item.class + '</div><div class="collapsible-body"><span><ul class="collection"><li class="collection-item">Id:' + item._id + '</li><li class="collection-item">Contact: ' + item.contact + '</li><li class="collection-item">Email: ' + item.email + '</li> <li class="collection-item">Address: ' + item.address + '</li></ul></span></div> </li>';
     });
 });
-
+socket.emit('database-size');
 socket.on('database-size-return', function (data) {
     console.log(data);
     $("#name").text("Databse name: " + data.name);

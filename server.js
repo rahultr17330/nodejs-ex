@@ -9,6 +9,7 @@ var cookieParser = require('cookie-parser');
 Object.assign=require('object-assign');
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.use(morgan('combined'));
 
