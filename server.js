@@ -42,6 +42,7 @@ global.databaseUrl = mongoURL;
 verify.dbinfo(global.databaseUrl,function(response){
   console.log(response);
 });
+admin_calls.dbinfo(global.databaseUrl);
 var db = null,
     dbDetails = new Object();
 

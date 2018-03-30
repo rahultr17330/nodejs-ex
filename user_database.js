@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
-var user_record = mongoose.createConnection('mongodb://rahulmongo:6391530dad@cluster0-shard-00-00-fcuzh.mongodb.net:27017,cluster0-shard-00-01-fcuzh.mongodb.net:27017,cluster0-shard-00-02-fcuzh.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin');
-var normal_database = mongoose.createConnection('mongodb://gt_mlab:rahul123@ds135486.mlab.com:35486/rahul_mongodb');
+module.exports.dbinfo = function(mongourl){
+if(mongourl){
+    var database = mongoose.createConnection(mongourl);
 var schema_user_record = mongoose.Schema({
     name: String,
     contact: Number,
@@ -8,13 +9,13 @@ var schema_user_record = mongoose.Schema({
     email: String,
     address: String
 });
-var user_record = user_record.model('user_record', schema_user_record);
+var user_record = database.model('user_record', schema_user_record);
 var file_schema = mongoose.Schema({
     fileName: String,
     fileDownloadUrl: String,
     class: String
 });
-file_record = normal_database.model('file_record', file_schema);
+file_record = database.model('file_record', file_schema);
 module.exports.get_database_size = function (response) {
     user_record.collection.stats({
         scale: 1024
@@ -167,4 +168,6 @@ module.exports.delete_file_from_db = function (data, response) {
 
     });
 
+}
+}    
 }
