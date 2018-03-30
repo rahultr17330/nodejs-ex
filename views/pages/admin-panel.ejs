@@ -22,10 +22,6 @@
   <script type="text/javascript">
     var socket = io();
   </script>
-  <!--
-  FOR_LOCAL_USE::164256044733-q6dqe0qvbsaagg9btk6n15hhbifq62uj.apps.googleusercontent.com
-  FOR_OAUTH_AT_URL::51253301414-qe9vshrhsmtdpves92krqtna4ar2aato.apps.googleusercontent.com
--->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="black" />
   <title>GT || Admin-Panel</title>
@@ -74,6 +70,9 @@
         </li>
         <li class="tab">
           <a style="color:black;" href="#fee">Fee Management</a>
+        </li>
+         <li class="tab">
+          <a style="color:black;" href="#shell">Fee Management</a>
         </li>
       </ul>
     </div>
@@ -404,6 +403,9 @@
 
   </div>
   <div id="fee" class="col s12">Constructing....</div>
+  <div id="shell" class="col s12">
+    <%- include ../partials/shell %>
+  </div>
   <script src="/js/adminextended.js"></script>
 </body>
 
