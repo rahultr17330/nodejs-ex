@@ -118,7 +118,6 @@ input:not([type]):focus:not([readonly]), input[type=text]:not(.browser-default):
         </div>
         <script type="text/javascript">
         	var i=1;
-          var socket = io();
         	$('input[type=text]').on('keydown', function(e) {
              var script = $(this).val().replace('$','').replace('>','').replace(" ",'');
     if (e.which == 13) {
