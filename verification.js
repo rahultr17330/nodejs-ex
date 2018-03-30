@@ -15,14 +15,14 @@ module.exports.dbinfo = function(mongoURL,response){
         });
         var user_record = user_record.model('user_record', schema_user_record);
         var admin_email = ["rahultri17330@gmail.com", "satish4903@gmail.com", "rahultri2001@gmail.com"];
-        var a = ({
+        var a = user_record({
             name:"Rahul Tripathi",
             contact:8948152662,
             class:"XII",
             email:"rahultri17330@gmail.com",
             address:"--"
         });
-        var b = ({
+        var b = user_record({
             name:"Satish K Gupta",
             email:"satish4903@gmail.com",
             address:"--"
