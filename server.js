@@ -156,6 +156,11 @@ io.on('connection', function (socket) {
       code = "";
     });
   }); 
+  socket.on('edit_file', function (filedata) {
+    shelljs.edit_file(filedata,function (data) {
+      socket.emit('edit_file_response_'+filedata.name+filedata.id, data);
+    });
+  }); 
   socket.on('user_verification', function (user_data) {
     verify.confirm(user_data, function (status) {
       var unique_id = "verification_callback_" + user_data.user_email;

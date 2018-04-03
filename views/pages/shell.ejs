@@ -9,8 +9,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <meta name="theme-color" content="black" />
+<link rel="shortcut icon" type="image/png" href="/images/shell.png" />
     <style>
         blockquote {
             margin: 0px 0;
@@ -21,7 +25,9 @@
         p {
             font-family: 'IBM Plex Mono', monospace;
         }
-        
+        #exec{
+        	font-family: 'IBM Plex Mono', monospace;
+        }
         input:not([type]):focus:not([readonly]),
         input[type=text]:not(.browser-default):focus:not([readonly]),
         input[type=password]:not(.browser-default):focus:not([readonly]),
@@ -137,19 +143,69 @@
                                 $(this).val(">$ ");
                                 $("#exec").append('<p>' + i + '.<font color="#ff071a">> $ </font> ' + script + '</p>');
                                 i++;
-                                $("input").hide(10, function() {
+                                 if(script.substring(0, 4) == 'edit'){
+                                    	var edit = 'cat'+ script.substring(4, script.length);
+                                    	console.log(edit);
+                                    	var random = Math.floor(Math.random() * 1000);
+                                    socket.emit('shell_exec', {
+                                        sc: edit,
+                                        id: random
+                                    });
+                                    socket.on('shell_exec_response_' + edit + random, function(data) {
+                                   
+                                      
+                                       $("#exec").append('<div id="editbox"><blockquote style="border-color:#00BCD4;"><textarea id="area" class="materialize-textarea" style="color:white;border: none; border-bottom:0px; border-radius: 0; outline: 0px; height: 3rem; width: 100%; font-size: 12px;font-family: IBM Plex Mono, monospace; margin: 0 0 0px 0; padding: 0; border-bottom: none; -webkit-box-shadow:none; box-shadow: none;" >'+data.result+'</textarea></blockquote> <a id="save" style="margin:5px;font-size: 12px;color:white; border:dashed 1px;" class="waves-effect waves-light btn-flat">Save</a><a id="cancel" style="margin:5px;font-size: 12px;color:white; border:dashed 1px;" class="waves-effect waves-light btn-flat">Cancel</a></div>');
+                                      $("input").hide();
+                                      $("#cancel").click(function(){
+                                      $("#editbox").remove();
+                                      $("#exec").append('<p> WARNING! Operation Aborted By The user </p>');
+                                      $("input").show();});
+                                      $("#save").click(function(){
+                                      	 var random = Math.floor(Math.random() * 1000);
+                                      	   socket.emit('edit_file', {
+                                        fdata:$("#area").val(),
+                                        name: script.substring(5, script.length),
+                                        id:random
+                                    });
+                                      	    socket.on('edit_file_response_' + script.substring(5, script.length)+ random,function(data) {
+                                      	    	$("#editbox").remove();
+                                      	    	$("#exec").append('<p>'+script.substring(5, script.length)+' : '+data+' </p>');
+                                      	    	 $("input").show();
+                                      	    });
+                                      });
+                                    });
+                                }
+                              else{$("input").hide(10, function() {
                                     $("#loader").show();
+                                   
                                     var random = Math.floor(Math.random() * 1000);
                                     socket.emit('shell_exec', {
                                         sc: script,
                                         id: random
                                     });
                                     socket.on('shell_exec_response_' + script + random, function(data) {
+                                       if(script.substring(0, 3) == 'cat'){
+                                       	console.log(data.result);
+                                       	var filetype = script.substring(script.indexOf(".")+1,script.length);
+                                       	console.log(filetype);
+                                       	if(filetype == 'js'){
+                                       $("#exec").append('<pre><code class="javascript">'+data.result+'</code></pre>');}
+                                       else{
+                                       	if(filetype == 'ejs'){
+                                       		data.result= data.result.replace(new RegExp(['<'],"g"), "&lt;"); data.result = data.result.replace(new RegExp(['>'],"g"), "&gt;");
+                                       	$("#exec").append('<pre><code class="language-html">'+data.result+'</code></pre>');}
+                                       else{
+                                       	 	$("#exec").append('<pre><code class="'+filetype+'">'+data.result+'</code></pre>');}
+                                       }
                                       
-                                        	 var reWhiteSpace = new RegExp("/^\s+$/");
-                                            $("#exec").append('<p>')
+                                        $('pre code').each(function(i, block) {
+
+  										  hljs.highlightBlock(block);
+										  });
+
+                                       }
+                                          else if (script.substring(0, 4) != 'edit'){  $("#exec").append('<p>')
                                             for (i = 0; i < data.result.length; i++) {
-                                                console.log(data.result[i]);
                                                 if (data.result[i] != '\n') {
                                                     $("#exec").append(data.result[i])
                                                 } else if (data.result[i] == '\n') {
@@ -157,12 +213,12 @@
                                                 }
                                               }
                                             $("#exec").append('<br>CODE : ' + data.code + '</p>');
-                                      
+                                      }
                                         $("#loader").hide(10, function() {
                                             $("input").show();
                                         });
                                     });
-                                });
+                                });}
                             }
                         } else if (e.which == 38) {
                             $("input").val(">$ " + script);
