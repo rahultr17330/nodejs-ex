@@ -34,7 +34,7 @@ module.exports.shell_exec = function(e, l) {
         };
     }
     else if (e.substring(0, 7)=='forever'){
-    	e = e+" --no-colors";
+    	//e = e+" --no-colors";
     	o = shell.exec(e);
     	var s = {
             result: o.stdout,
