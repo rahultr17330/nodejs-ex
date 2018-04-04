@@ -9,6 +9,7 @@
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.8",
     "express": "^4.16.3",
+    "forever": "^0.15.3",
     "mocha": "^2.4.5",
     "mongodb": "^2.1.16",
     "mongoose": "^5.0.12",
@@ -25,7 +26,6 @@
   },
   "scripts": {
     "start": "forever start server.js",
-    
     "test": "IP=0.0.0.0 PORT=3030 mocha --timeout 5000 tests/*_test.js"
   },
   "repository": {
