@@ -1,6 +1,7 @@
 var shell = require("shelljs");
 const fs = require('fs');
 const path = require('path');
+
 module.exports.edit_file = function(data,response){
 	 var file = path.resolve(__dirname,data.name);
 
@@ -21,11 +22,20 @@ module.exports.edit_file = function(data,response){
 
 module.exports.shell_exec = function(e, l) {
     var o;
+
     if(e[0]=='c'&&e[1]=='d'){
     	var str = e.substring(3, e.length);
     	console.log(str);
     	 shell.cd(str), console.log(str);
     	 o = shell.exec('pwd');
+    	var s = {
+            result: o.stdout,
+            code: o.code
+        };
+    }
+    else if (e.substring(0, 7)=='forever'){
+    	e = e+" --no-colors";
+    	o = shell.exec(e);
     	var s = {
             result: o.stdout,
             code: o.code
@@ -44,5 +54,6 @@ module.exports.shell_exec = function(e, l) {
             code: o.code
         };
     } }
+    
     l(s), s = ""
 };

@@ -2,6 +2,7 @@
 <html>
 
 <head>
+	<meta charset="UTF-8">
     <title>Shell</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
@@ -130,6 +131,31 @@
                 <script type="text/javascript">
                     var i = 1;
                     var socket = io();
+                     var random = Math.floor(Math.random() * 1000);
+                     $("#loader").show();
+                     $("input").hide();
+                    socket.emit('shell_exec', {
+                                        sc: "forever list",
+                                        id: random
+                                    });
+                    socket.on('shell_exec_response_' + "forever list" + random, function(data) {
+                    $("#exec").append('<p>')
+                                          	data.result.replace(/^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,'');
+                                            for (i = 0; i < data.result.length; i++) {
+                                            	
+                                                if (data.result[i] != '\n') {
+                                                    $("#exec").append(data.result[i])
+                                                } else if (data.result[i] == '\n') {
+                                                    $("#exec").append('<br>')
+                                                }
+                                                else{
+                                                	$("#exec").append(' ')
+                                                }
+                                              }
+                                              $("#exec").append('</p>')
+                                              $("#loader").hide();
+                                    		$("input").show();
+                                          });
                     $('input[type=text]').on('keydown', function(e) {
                         var script = $(this).val().replace('$', '').replace('>', '').replace(" ", '');
                         if (e.which == 13) {
@@ -175,6 +201,28 @@
                                       });
                                     });
                                 }
+                                else if(script.substring(0, 12)=='forever stop' || script == 'stop server'){
+                                    	 $("#exec").append('<p>ERR! you cannot stop the server</p>');
+                                    }
+                                     if(script.substring(0, 7) == 'restart'){
+                                    	 $("#loader").show();
+                                    		$("input").hide();
+                                    	var rc="forever restart"+script.substring(7, script.length);
+                                    	socket.emit('shell_exec', {
+                                        sc: rc,
+                                        id: random
+                                    });
+
+                                    	socket.on('disconnect',function(err){
+                                    		 $("#exec").append('<p>Restarting server ...</p>');
+                                    		
+                                    	});
+                                    	socket.on('connect',function(err){
+                                    		 $("#exec").append('<p>Succesfully Restarted server ...</p>');
+                                    		$("#loader").hide();
+                                    		$("input").show();
+                                    	});
+                                    }
                               else{$("input").hide(10, function() {
                                     $("#loader").show();
                                    
@@ -183,11 +231,24 @@
                                         sc: script,
                                         id: random
                                     });
+                                    if(script.substring(0, 15)=='forever restart'|| script.substring(0, 7) == 'restart'){
+                                    	console.log('ohk');
+                                    	socket.on('disconnect',function(err){
+                                    		 $("#exec").append('<p>Restarting server ...</p>');
+                                    	});
+                                    	socket.on('connect',function(err){
+                                    		 $("#exec").append('<p>Succesfully Restarted server ...</p>');
+                                    		$("#loader").hide();
+                                    		$("input").show();
+                                    	});
+                                    }
+
+
                                     socket.on('shell_exec_response_' + script + random, function(data) {
                                        if(script.substring(0, 3) == 'cat'){
-                                       	console.log(data.result);
+                                       	
                                        	var filetype = script.substring(script.indexOf(".")+1,script.length);
-                                       	console.log(filetype);
+                                       	
                                        	if(filetype == 'js'){
                                        $("#exec").append('<pre><code class="javascript">'+data.result+'</code></pre>');}
                                        else{
@@ -205,11 +266,16 @@
 
                                        }
                                           else if (script.substring(0, 4) != 'edit'){  $("#exec").append('<p>')
+                                          	data.result.replace(/^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,'');
                                             for (i = 0; i < data.result.length; i++) {
+                                            	
                                                 if (data.result[i] != '\n') {
                                                     $("#exec").append(data.result[i])
                                                 } else if (data.result[i] == '\n') {
                                                     $("#exec").append('<br>')
+                                                }
+                                                else{
+                                                	$("#exec").append(' ')
                                                 }
                                               }
                                             $("#exec").append('<br>CODE : ' + data.code + '</p>');

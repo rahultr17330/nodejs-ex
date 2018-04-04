@@ -138,6 +138,7 @@ requser={
 res.render('pages/chatroom',{data:requser});
 });
     app.get('/shell',function(req,res){
+  console.log("yep restarted");
   res.render('pages/shell');
 });
 app.get('*', function (req, res) {
