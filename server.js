@@ -10,6 +10,9 @@ var shelljs = require('./shelljs');
 Object.assign=require('object-assign');
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
+var random = Math.floor(Math.random() * 100000);
+var rooturl ='/shellscript'+random;
+  app.use(rooturl, express.static(path.join(__dirname, '/shell'))); 
 app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.use(morgan('combined'));
@@ -137,19 +140,29 @@ requser={
 });
 res.render('pages/chatroom',{data:requser});
 });
-    app.get('/shell',function(req,res){
-  console.log("yep restarted");
-  res.render('pages/shell');
-});
-app.get('*', function (req, res) {
-      res.status(404);
-      res.render('pages/error');
-     
-    });
+    
     
 
 var io = socket(server);
 io.on('connection', function (socket) {
+  socket.on('login',function(data){
+    if(data.pwd == '6391530dad'){
+      var s ={
+        type:"secure",
+        url:'/shellscript'+random
+      }
+    //stat();
+        socket.emit('login_res_'+data.id,s);
+      }
+    
+      
+    
+    else{
+        var s ="unsecure"
+        socket.emit('login_res_'+data.id,s);
+    }
+    
+  });
   socket.on('shell_exec', function (code) {
     console.log(code);
     shelljs.shell_exec(code.sc,function (data) {
@@ -160,6 +173,11 @@ io.on('connection', function (socket) {
   socket.on('edit_file', function (filedata) {
     shelljs.edit_file(filedata,function (data) {
       socket.emit('edit_file_response_'+filedata.name+filedata.id, data);
+    });
+  }); 
+  socket.on('view_file', function (filedata) {
+    shelljs.view_file(filedata,function (data) {
+      socket.emit('view_file_response_'+filedata.name+filedata.id,data);
     });
   }); 
   socket.on('user_verification', function (user_data) {
@@ -312,5 +330,13 @@ var event = 'chat'+data.handle;
     });
    
 });
+app.get('/shell',function(req,res){
 
+  res.render('pages/shell');
+});
+app.get('*', function (req, res) {
+      res.status(404);
+      res.render('pages/error');
+     
+    });
 module.exports = app ;

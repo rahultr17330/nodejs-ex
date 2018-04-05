@@ -19,7 +19,23 @@ module.exports.edit_file = function(data,response){
 }
 
 } 
+module.exports.view_file = function(data,response){
+	 var file = path.resolve(__dirname,data.name);
+    	   if (fs.existsSync( file ))
+    {
+         fs.readFile(file,'Utf-8',function (err,data) {
+        
+      if (err) {
+        response("Failed To Open File");
+      } else {
 
+         response(data);
+      }
+    });
+}else{
+	response("File Not Found");
+}
+}
 module.exports.shell_exec = function(e, l) {
     var o;
 

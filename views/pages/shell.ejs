@@ -16,6 +16,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <meta name="theme-color" content="black" />
 <link rel="shortcut icon" type="image/png" href="/images/shell.png" />
+<script src="/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/lib/codemirror.css">
+<link rel="stylesheet" href="/theme/monokai.css">
+<script src="/mode/javascript/javascript.js"></script>
     <style>
         blockquote {
             margin: 0px 0;
@@ -109,13 +113,25 @@
             animation-direction: reverse;
             /* thx @HugoGiraudel */
         }
+        .CodeMirror {
+    font-family: monospace;
+    height: auto;
+    height:auto;
+     font-size:14px;
+    font-family:'IBM Plex Mono', monospace;
+    direction: ltr;
+}
+input{
+	border: none; border-bottom:0px; border-radius: 0; outline: 0px; height: 3rem; width: 100%; font-size: 12px; color: #ffffff; font-family: 'IBM Plex Mono', monospace; margin: 0 0 0px 0; padding: 0; border-bottom: none; -webkit-box-shadow:none; box-shadow: none;
+}
     </style>
+
 </head>
 
 <body>
     <div class="row">
         <div class="col s12 m12">
-            <div class="card" style="background-color: black;">
+            <div class="card" id="shell" style="background-color: black;">
                 <div class="card-content">
                     <div id="exec" style="color: #cecccc; font-size:12px;"> </div>
                     <input value=">$ " id="scriptBox" type="text" style="border: none; border-bottom:0px; border-radius: 0; outline: 0px; height: 3rem; width: 100%; font-size: 12px; color: #ffffff; font-family: 'IBM Plex Mono', monospace; margin: 0 0 0px 0; padding: 0; border-bottom: none; -webkit-box-shadow:none; box-shadow: none;">
@@ -128,170 +144,59 @@
                         </center>
                     </div>
                 </div>
+                 </div>
+                 <div id="editor-area" style="display: none;"></div>
                 <script type="text/javascript">
+                	
                     var i = 1;
                     var socket = io();
-                     var random = Math.floor(Math.random() * 1000);
-                     $("#loader").show();
-                     $("input").hide();
-                    socket.emit('shell_exec', {
-                                        sc: "forever list",
-                                        id: random
-                                    });
-                    socket.on('shell_exec_response_' + "forever list" + random, function(data) {
-                    $("#exec").append('<p>')
-                                          	data.result.replace(/^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,'');
-                                            for (i = 0; i < data.result.length; i++) {
-                                            	
-                                                if (data.result[i] != '\n') {
-                                                    $("#exec").append(data.result[i])
-                                                } else if (data.result[i] == '\n') {
-                                                    $("#exec").append('<br>')
-                                                }
-                                                else{
-                                                	$("#exec").append(' ')
-                                                }
-                                              }
-                                              $("#exec").append('</p>')
-                                              $("#loader").hide();
+                    socket.on('disconnect',function(err){
+                                    		 $("#exec").append('<p>Connecting To Server server ...</p>');
+                                    		$("#loader").show();
+                                    	});
+                                    	socket.on('connect',function(err){
+                                    		 $("#exec").append('<p>Connected To server ...</p>');
+                                    		$("#loader").hide();
                                     		$("input").show();
-                                          });
-                    $('input[type=text]').on('keydown', function(e) {
+                                    		 var random = Math.floor(Math.random() * 1000);
+                     $("input").show();
+                     $('input[type=text]').on('keydown', function(e) {
                         var script = $(this).val().replace('$', '').replace('>', '').replace(" ", '');
-                        if (e.which == 13) {
-                            e.preventDefault();
-                            console.log(script.length);
-                            if (script == "clear") {
-                                $("#exec").html("");
-                                $(this).val(">$ ");
-                                i = 1;
-                            } else {
-                                $(this).val(">$ ");
-                                $("#exec").append('<p>' + i + '.<font color="#ff071a">> $ </font> ' + script + '</p>');
-                                i++;
-                                 if(script.substring(0, 4) == 'edit'){
-                                    	var edit = 'cat'+ script.substring(4, script.length);
-                                    	console.log(edit);
-                                    	var random = Math.floor(Math.random() * 1000);
-                                    socket.emit('shell_exec', {
-                                        sc: edit,
-                                        id: random
-                                    });
-                                    socket.on('shell_exec_response_' + edit + random, function(data) {
-                                   
-                                      
-                                       $("#exec").append('<div id="editbox"><blockquote style="border-color:#00BCD4;"><textarea id="area" class="materialize-textarea" style="color:white;border: none; border-bottom:0px; border-radius: 0; outline: 0px; height: 3rem; width: 100%; font-size: 12px;font-family: IBM Plex Mono, monospace; margin: 0 0 0px 0; padding: 0; border-bottom: none; -webkit-box-shadow:none; box-shadow: none;" >'+data.result+'</textarea></blockquote> <a id="save" style="margin:5px;font-size: 12px;color:white; border:dashed 1px;" class="waves-effect waves-light btn-flat">Save</a><a id="cancel" style="margin:5px;font-size: 12px;color:white; border:dashed 1px;" class="waves-effect waves-light btn-flat">Cancel</a></div>');
-                                      $("input").hide();
-                                      $("#cancel").click(function(){
-                                      $("#editbox").remove();
-                                      $("#exec").append('<p> WARNING! Operation Aborted By The user </p>');
-                                      $("input").show();});
-                                      $("#save").click(function(){
-                                      	 var random = Math.floor(Math.random() * 1000);
-                                      	   socket.emit('edit_file', {
-                                        fdata:$("#area").val(),
-                                        name: script.substring(5, script.length),
-                                        id:random
-                                    });
-                                      	    socket.on('edit_file_response_' + script.substring(5, script.length)+ random,function(data) {
-                                      	    	$("#editbox").remove();
-                                      	    	$("#exec").append('<p>'+script.substring(5, script.length)+' : '+data+' </p>');
-                                      	    	 $("input").show();
-                                      	    });
-                                      });
-                                    });
-                                }
-                                else if(script.substring(0, 12)=='forever stop' || script == 'stop server'){
-                                    	 $("#exec").append('<p>ERR! you cannot stop the server</p>');
-                                    }
-                                     if(script.substring(0, 7) == 'restart'){
-                                    	 $("#loader").show();
-                                    		$("input").hide();
-                                    	var rc="forever restart"+script.substring(7, script.length);
-                                    	socket.emit('shell_exec', {
-                                        sc: rc,
-                                        id: random
-                                    });
+                         if (e.which == 13) {
 
-                                    	socket.on('disconnect',function(err){
-                                    		 $("#exec").append('<p>Restarting server ...</p>');
-                                    		
-                                    	});
-                                    	socket.on('connect',function(err){
-                                    		 $("#exec").append('<p>Succesfully Restarted server ...</p>');
-                                    		$("#loader").hide();
-                                    		$("input").show();
-                                    	});
-                                    }
-                              else{$("input").hide(10, function() {
-                                    $("#loader").show();
-                                   
-                                    var random = Math.floor(Math.random() * 1000);
-                                    socket.emit('shell_exec', {
-                                        sc: script,
-                                        id: random
-                                    });
-                                    if(script.substring(0, 15)=='forever restart'|| script.substring(0, 7) == 'restart'){
-                                    	console.log('ohk');
-                                    	socket.on('disconnect',function(err){
-                                    		 $("#exec").append('<p>Restarting server ...</p>');
-                                    	});
-                                    	socket.on('connect',function(err){
-                                    		 $("#exec").append('<p>Succesfully Restarted server ...</p>');
-                                    		$("#loader").hide();
-                                    		$("input").show();
-                                    	});
-                                    }
+                        if(script.substring(0,5) == 'login'){
+                   
+                        	$("input").hide();
+                        	$("#loader").show();
+                        	var random = Math.floor(Math.random() * 1000);
+                        	var res={
+                        		pwd:script.substring(6,script.length),
+                        		id:random
+                        	}
+                        	socket.emit('login',res);
+                        	$("input").val('>$ ');
+                        	socket.on('login_res_'+random,function(data){
+                        		if(data.type == "secure"){
+                        			 var script = document.createElement("script");
+                        			 script.src=data.url+'/shellscript.js';
+                        			 document.head.appendChild(script);
+                        		}
+                        		else{
+                        			$("#loader").hide();
+                        			 $("#exec").append('<p>Wrong Password ...</p>');
 
-
-                                    socket.on('shell_exec_response_' + script + random, function(data) {
-                                       if(script.substring(0, 3) == 'cat'){
-                                       	
-                                       	var filetype = script.substring(script.indexOf(".")+1,script.length);
-                                       	
-                                       	if(filetype == 'js'){
-                                       $("#exec").append('<pre><code class="javascript">'+data.result+'</code></pre>');}
-                                       else{
-                                       	if(filetype == 'ejs'){
-                                       		data.result= data.result.replace(new RegExp(['<'],"g"), "&lt;"); data.result = data.result.replace(new RegExp(['>'],"g"), "&gt;");
-                                       	$("#exec").append('<pre><code class="language-html">'+data.result+'</code></pre>');}
-                                       else{
-                                       	 	$("#exec").append('<pre><code class="'+filetype+'">'+data.result+'</code></pre>');}
-                                       }
-                                      
-                                        $('pre code').each(function(i, block) {
-
-  										  hljs.highlightBlock(block);
-										  });
-
-                                       }
-                                          else if (script.substring(0, 4) != 'edit'){  $("#exec").append('<p>')
-                                          	data.result.replace(/^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,'');
-                                            for (i = 0; i < data.result.length; i++) {
-                                            	
-                                                if (data.result[i] != '\n') {
-                                                    $("#exec").append(data.result[i])
-                                                } else if (data.result[i] == '\n') {
-                                                    $("#exec").append('<br>')
-                                                }
-                                                else{
-                                                	$("#exec").append(' ')
-                                                }
-                                              }
-                                            $("#exec").append('<br>CODE : ' + data.code + '</p>');
-                                      }
-                                        $("#loader").hide(10, function() {
-                                            $("input").show();
-                                        });
-                                    });
-                                });}
-                            }
-                        } else if (e.which == 38) {
-                            $("input").val(">$ " + script);
+                        			$("input").show();
+                        		}
+                        	})
                         }
+                    }
                     });
+                   
+                                    	});
+                    
+                 
                 </script>
-            </div>
+           
         </div>
     </div>
 </body>
