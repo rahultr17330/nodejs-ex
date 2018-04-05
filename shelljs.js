@@ -5,7 +5,7 @@ const path = require('path');
 module.exports.edit_file = function(data,response){
 	 var file = path.resolve(__dirname,data.name);
 
-    if (fs.existsSync( file ))
+  if (fs.existsSync( './'+data.name))
     {
          fs.writeFile(file,data.fdata, 'utf-8', function (err) {
       if (err) {
@@ -21,9 +21,11 @@ module.exports.edit_file = function(data,response){
 } 
 module.exports.view_file = function(data,response){
 	 var file = path.resolve(__dirname,data.name);
-    	   if (fs.existsSync( file ))
+	 console.log(file);
+    	   if (fs.existsSync( './'+data.name ))
     {
-         fs.readFile(file,'Utf-8',function (err,data) {
+
+         fs.readFile('./'+data.name,'Utf-8',function (err,data) {
         
       if (err) {
         response("Failed To Open File");

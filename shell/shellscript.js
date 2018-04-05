@@ -35,16 +35,15 @@
                                 $("#exec").append('<p>' + i + '.<font color="#ff071a">> $ </font> ' + script + '</p>');
                                 i++;
                                  if(script.substring(0, 4) == 'edit'){
-                                    	var edit = 'cat'+ script.substring(4, script.length);
-                                    	console.log(edit);
+                                    var filename = script.substring(5, script.length);
                                     	var random = Math.floor(Math.random() * 1000);
-                                    socket.emit('shell_exec', {
-                                        sc: edit,
-                                        id: random
-                                    });
-                                    socket.on('shell_exec_response_' + edit + random, function(data) {
+                                       socket.emit('view_file', {
+                                      name: filename,
+                                        id:random
+                                    })
+                                    socket.on('view_file_response_' + filename+ random,function(data) {
                                    
-                                      if(data.result.substring(0, 3) != "cat"){
+                                      if(data.substring(0, 4) != "File"){
                                       	$("#shell").hide();
                                       	$("#editor-area").show();
                                        $("#editor-area").append('<div id="editor"><div class="navbar-fixed"><nav style="background-color:transparent;"><div class="nav-wrapper"><ul><li><a id="save" class="waves-effect waves-light btn">Save</a></li><li><a id="cancel" class="waves-effect waves-light btn">Cancel</a></li></ul></div></nav></div><textarea id="editbox"  ></textarea></div>');
@@ -55,7 +54,7 @@
                                        	lineNumbers: true,
                                        	scrollbarStyle:"null"
                                        	});
-                                      editor.getDoc().setValue(data.result);
+                                      editor.getDoc().setValue(data);
                                       
                                       $("#cancel").click(function(){
                                    $("#editor-area").hide();
@@ -77,6 +76,9 @@
                                       	    	 $("#shell").show();
                                       	    });
                                       });}
+                                      else{
+                                        $("#exec").append('<p>'+data+'</p>');
+                                      }
                                     });
                                 }
                                 else if(script.substring(0, 12)=='forever stop' || script == 'stop server'){
