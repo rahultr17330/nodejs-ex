@@ -145,11 +145,13 @@ res.render('pages/chatroom',{data:requser});
 
 var io = socket(server);
 io.on('connection', function (socket) {
+  var ip = socket.request.connection.remoteAddress;
   socket.on('login',function(data){
     if(data.pwd == '6391530dad'){
       var s ={
         type:"secure",
-        url:'/shellscript'+random
+        url:'/shellscript'+random,
+        port:ip
       }
     //stat();
         socket.emit('login_res_'+data.id,s);

@@ -13,14 +13,19 @@
     <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css">
 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <meta name="theme-color" content="black" />
 <link rel="shortcut icon" type="image/png" href="/images/shell.png" />
 <script src="/lib/codemirror.js"></script>
 <link rel="stylesheet" href="/lib/codemirror.css">
 <link rel="stylesheet" href="/theme/monokai.css">
+<script src="/mode/xml/xml.js"></script>
 <script src="/mode/javascript/javascript.js"></script>
+<script src="/mode/css/css.js"></script>
+<script src="/mode/htmlmixed/htmlmixed.js"></script>
     <style>
+
         blockquote {
             margin: 0px 0;
             padding-left: 1.5rem;
@@ -129,6 +134,8 @@ input{
 </head>
 
 <body>
+    <center><img src="/images/shell.svg" style="display:inline; height:48px; width:48px; margin-top: 5px;margin-left: 5px;vertical-align: bottom; ">
+        <h3 style="display: inline; font-family:'IBM Plex Mono', monospace;"> SHELL v0.0.1</h3></center>
     <div class="row">
         <div class="col s12 m12">
             <div class="card" id="shell" style="background-color: black;">
@@ -147,7 +154,7 @@ input{
                  </div>
                  <div id="editor-area" style="display: none;"></div>
                 <script type="text/javascript">
-                	
+                	Cookies.set('userType', 'default');
                     var i = 1;
                     var socket = io();
                     socket.on('disconnect',function(err){
@@ -155,31 +162,36 @@ input{
                                     		$("#loader").show();
                                     	});
                                     	socket.on('connect',function(err){
+
                                     		 $("#exec").append('<p>Connected To server ...</p>');
+                                              $("#exec").append('<p>Welcome To Shell v 0.0.1 <br> To Use Shell Login First Using : login [password] </p>');
                                     		$("#loader").hide();
                                     		$("input").show();
                                     		 var random = Math.floor(Math.random() * 1000);
                      $("input").show();
                      $('input[type=text]').on('keydown', function(e) {
-                        var script = $(this).val().replace('$', '').replace('>', '').replace(" ", '');
+                        var scr = $(this).val().replace('$', '').replace('>', '').replace(" ", '');
                          if (e.which == 13) {
 
-                        if(script.substring(0,5) == 'login'){
+                        if(scr.substring(0,5) == 'login' && Cookies.get('userType') == 'default'){
                    
                         	$("input").hide();
                         	$("#loader").show();
                         	var random = Math.floor(Math.random() * 1000);
                         	var res={
-                        		pwd:script.substring(6,script.length),
+                        		pwd:scr.substring(6,scr.length),
                         		id:random
                         	}
                         	socket.emit('login',res);
                         	$("input").val('>$ ');
                         	socket.on('login_res_'+random,function(data){
                         		if(data.type == "secure"){
-                        			 var script = document.createElement("script");
-                        			 script.src=data.url+'/shellscript.js';
-                        			 document.head.appendChild(script);
+                                    $("#exec").append('<p>Welcome To Shell v 0.0.1 <br> To View a file : view [filename] <br>To View a edit : edit [filename] <br> To restart nodejs Instance : restart [core file] <br> To clear screen : clear</p>');
+                            Cookies.set('userType', 'root');
+                        			 var scri = document.createElement("script");
+                        			 scri.src=data.url+'/shellscript.js';
+                        			 document.head.appendChild(scri);
+                                     $("#exec").append('<p>New User From : '+data.port);
                         		}
                         		else{
                         			$("#loader").hide();
@@ -189,6 +201,11 @@ input{
                         		}
                         	})
                         }
+                        else if( Cookies.get('userType') != 'root'){
+                             $("#exec").append('<p>AUTH ERR! Please Login</p>');
+                             $("input").val('>$ ');
+                        }
+                     
                     }
                     });
                    

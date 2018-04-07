@@ -2,8 +2,11 @@
                                         sc: "forever list",
                                         id: random
                                     });
+   
                     socket.on('shell_exec_response_' + "forever list" + random, function(data) {
                     $("#exec").append('<p>')
+                   
+                    
                                             data.result.replace(/^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,'');
                                             for (i = 0; i < data.result.length; i++) {
                                               
@@ -17,6 +20,7 @@
                                                 }
                                               }
                                               $("#exec").append('</p>')
+                                             
                                               $("#loader").hide();
                                         $("input").show();
                                           });
@@ -25,12 +29,16 @@
                         var script = $(this).val().replace('$', '').replace('>', '').replace(" ", '');
                         if (e.which == 13) {
                             e.preventDefault();
-                            console.log(script.length);
+                           
                             if (script == "clear") {
                                 $("#exec").html("");
                                 $(this).val(">$ ");
                                 i = 1;
-                            } else {
+                            } 
+                           else if(script.substring(0,5) == 'login'){
+                             $("#exec").append('<p>Already Logged In</p>');
+                                $("input").val('>$ ');
+                           }else {
                                 $(this).val(">$ ");
                                 $("#exec").append('<p>' + i + '.<font color="#ff071a">> $ </font> ' + script + '</p>');
                                 i++;
@@ -48,12 +56,23 @@
                                       	$("#editor-area").show();
                                        $("#editor-area").append('<div id="editor"><div class="navbar-fixed"><nav style="background-color:transparent;"><div class="nav-wrapper"><ul><li><a id="save" class="waves-effect waves-light btn">Save</a></li><li><a id="cancel" class="waves-effect waves-light btn">Cancel</a></li></ul></div></nav></div><textarea id="editbox"  ></textarea></div>');
                                        var textArea = document.getElementById('editbox');
-									var editor = CodeMirror.fromTextArea(textArea,{
-                                       	mode:"javascript",
-                                       	theme:"monokai",
-                                       	lineNumbers: true,
-                                       	scrollbarStyle:"null"
-                                       	});
+                                          var filetype = script.substring(script.indexOf(".")+1,script.length);
+                                         if(filetype != 'js'){
+									 var editor = CodeMirror.fromTextArea(textArea,{
+                                        mode:"htmlmixed",
+                                        theme:"monokai",
+                                        lineNumbers: true,
+                                        scrollbarStyle:"null"
+                                        });
+                  }
+                  else{
+                    var editor = CodeMirror.fromTextArea(textArea,{
+                                        mode:"javascript",
+                                        theme:"monokai",
+                                        lineNumbers: true,
+                                        scrollbarStyle:"null"
+                                        });
+                  }
                                       editor.getDoc().setValue(data);
                                       
                                       $("#cancel").click(function(){
@@ -81,6 +100,7 @@
                                       }
                                     });
                                 }
+
                                 else if(script.substring(0, 12)=='forever stop' || script == 'stop server'){
                                     	 $("#exec").append('<p>ERR! you cannot stop the server</p>');
                                     }
@@ -117,12 +137,12 @@
                                     });
                                       	    socket.on('view_file_response_' + filename+ random,function(data) {
                                        	var filetype = script.substring(script.indexOf(".")+1,script.length);
-                                       	
+                                       	data= data.replace(new RegExp(['<'],"g"), "&lt;"); data = data.replace(new RegExp(['>'],"g"), "&gt;");
                                        	if(filetype == 'js'){
                                        $("#exec").append('<pre><code class="javascript">'+data+'</code></pre>');}
                                        else{
                                        	if(filetype == 'ejs'){
-                                       		data= data.replace(new RegExp(['<'],"g"), "&lt;"); data = data.replace(new RegExp(['>'],"g"), "&gt;");
+                                       		
                                        	$("#exec").append('<pre><code class="language-html">'+data+'</code></pre>');}
                                        else{
                                        	 	$("#exec").append('<pre><code class="'+filetype+'">'+data+'</code></pre>');}
